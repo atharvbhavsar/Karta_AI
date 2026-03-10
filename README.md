@@ -6,53 +6,71 @@ KARTA AI is a powerful, automated credit appraisal engine built for the Indian m
 
 ---
 
-## 🚀 What We Have Done
+## 🚀 What We Have Built
 
-1. **Intelligent Document Parsing**: Created an engine that accepts scanned, handwritten, and mixed-language (Hindi/English) PDFs like Balance Sheets, Bank Statements, and GST Filings.
-2. **Real-time Early Warning System (EWS)**: Built a dynamic dashboard with live WebSocket telemetry that monitors active portfolios for volatility using simulated real-time drift algorithms.
-3. **Advanced Risk Assessment UI**: Designed an interface that presents XGBoost Default Risk, Fraud Multipliers, Data Quality, and News Sentiment scores.
-4. **SHAP Value Explanations**: Visualized the actual drivers behind a rejection or approval utilizing Waterfall SHAP diagrams.
-5. **Generative CAM**: Integrated LLMs to instantly generate a comprehensive, multi-page Credit Appraisal Memo synthesizing all financial records and background findings.
+1. **Intelligent Document Parsing**: Created an engine that accepts scanned, handwritten, and mixed-language (Hindi/English) PDFs like Balance Sheets, Bank Statements, and GST Filings. It bypasses simple text scraping and uses layout-aware extraction to structure the data.
+2. **Real-time Early Warning System (EWS)**: Built a dynamic dashboard with live WebSocket telemetry that monitors active portfolios for volatility using simulated real-time drift algorithms. It flags upcoming defaults before they happen based on sentiment, bank flow, and GST mismatch.
+3. **Advanced Risk Assessment UI**: Designed an interface that presents XGBoost Default Risk, Fraud Multipliers, Data Quality, and News Sentiment scores natively within a highly intuitive, corporate-grade React dashboard.
+4. **SHAP Value Explanations**: Visualized the actual drivers behind a rejection or approval utilizing Waterfall SHAP diagrams. It shows exactly *why* a model made a decision (e.g., negative impact from high short-term debt).
+5. **Generative CAM Synthesis**: Integrated Large Language Models (LLMs) to instantly generate a comprehensive, multi-page Credit Appraisal Memo synthesizing all financial records and background findings.
 6. **Robust Hackathon Demo Flow**: Designed a built-in stress-test flow that takes "messy" distressed company data and successfully proves an AI-driven "REJECT" decision based on EMI bounces and plunging revenue.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Detailed Technology Stack
 
-### Frontend Hub
-- **React.js (Vite)** 
-- **TypeScript** 
-- **Vanilla CSS / Lucide React Icons**
-- **React Router DOM** & **Recharts**
+### Frontend Hub (Client-Side)
+- **Vite & React.js**: Ultra-fast hot-module reloading and optimized production build setups.
+- **TypeScript**: Strict type-checking mapped perfectly to the Python backend models to prevent data parsing errors.
+- **Vanilla CSS / Lucide React Icons**: We avoided heavy styling frameworks (like Tailwind) and built custom CSS from scratch to ensure pixel-perfect, tailored aesthetic matching modern fintech applications.
+- **React Router DOM**: Client-side routing for navigating between Analysis, EWS, and History pages without reloading.
+- **Recharts**: For dynamic, SVG-based graphing of risk factors and financial data.
 
-### Backend Engine
-- **FastAPI (Python)** - Core orchestration and routing.
-- **WebSockets** - Live data streaming for the EWS pipeline.
-- **SQLite** - Session and document-state storage.
-- **PyMuPDF (fitz) / FPDF / pdfplumber** - High-speed PDF processing and generation.
+### Backend Engine (Server-Side)
+- **FastAPI (Python)**: The core orchestration framework. chosen for its extreme speed and native async support handling heavy I/O tasks like concurrent OCR and LLM calling.
+- **WebSockets**: Implemented custom socket handlers pointing to `/ws/ews` for live telemetry data streaming to the frontend.
+- **SQLite Database**: A lightweight, robust local database mapped with `sqlite3` to store document states, features, and analysis histories securely without external dependencies.
+- **PyMuPDF (fitz) & FPDF**: For high-speed rendering of PDFs into analyzable image bytes and generative reporting. 
+- **pdfplumber**: Used for layout-aware table extraction when reading bank statements.
 
-### AI & Analysis Integration
-- **Cohere API** - Generative AI for drafting the Credit Appraisal Memos (CAM).
-- **Computer Vision (Boto3 / Tesseract OCR)** - For extracting tables and text from messy scanned images.
-- **NLP / FinBERT Pipeline** - Evaluating News Sentiment and textual annotations in Hindi/English.
-- **XGBoost (Decision Emulation)** - Machine learning models for calculating Probability of Default (PD).
+### AI, NLP, and Machine Learning Architecture
+- **Cohere Command V2 Model**: Used for synthesizing the final Credit Appraisal Memo by analyzing a JSON dictionary of risk signals and writing a human-readable banking report.
+- **XGBoost (Decision Emulation)**: Emulated machine learning decision trees for calculating the ultimate Probability of Default (PD) and corresponding interest rate.
+- **FinBERT Pipeline**: Financial sentiment analysis against live news streams to flag macro-economic risks for a specific borrower.
+- **Tesseract OCR / Boto3 Textract**: Utilized for extracting raw text from messy, noisy, and rotated scanned financial images.
 
 ---
 
-## 🔑 Environment Variables & API Keys Required
+## 🔑 External API Integrations
 
-To run this platform successfully, create a `.env` file in the root directory (`/KARTA/.env`) with the following keys:
+To run this platform successfully, KARTA AI requires specific API keys to connect to various data enrichment and intelligence platforms. You must create a `.env` file in the root directory (`/KARTA/.env`) and add the following keys. 
+
+*Here is exactly what we used and why:*
 
 ```env
-# Required for Generative CAM features
-COHERE_API_KEY="your-cohere-api-key-here"
+# 1. COHERE API 
+# Purpose: Powers the Generative CAM engine. Synthesizes thousands of data points into a fluent banking report.
+COHERE_API_KEY="your-cohere-api-key"
 
-# (Optional) If utilizing AWS Textract for extreme OCR
+# 2. NEWS API
+# Purpose: Feeds live macro-economic and company-specific news into our FinBERT NLP pipeline for sentiment scoring.
+NEWS_API_KEY="your-news-api-key"
+
+# 3. MCA21 API (Ministry of Corporate Affairs)
+# Purpose: Cross-checks director DINs, company registration status (CIN), and flags shell corporations automatically.
+MCA_API_KEY="your-mca-api-key"
+
+# 4. SENDGRID API
+# Purpose: Hooks into the Early Warning System (EWS) to dispatch instant SMS/Email alerts to bank managers when a risk threshold breaches.
+SENDGRID_API_KEY="your-sendgrid-api-key"
+
+# 5. AWS CREDENTIALS (Optional for OCR scaling)
+# Purpose: Bridges Tesseract OCR with AWS Textract for extreme low-resolution document recovery.
 AWS_ACCESS_KEY_ID="your-aws-access-key"
 AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
 AWS_REGION="ap-south-1"
 
-# General Config 
+# 6. SYSTEM CONFIG
 ENVIRONMENT="development"
 FRONTEND_URL="http://localhost:5173"
 ```
@@ -61,9 +79,9 @@ FRONTEND_URL="http://localhost:5173"
 
 ## 🏁 How to Run the Project Locally
 
-You will need two terminal windows to run the frontend and backend simultaneously.
+You will need two separate terminal windows or standard command prompts to run both platforms simultaneously.
 
-### 1. Start the Backend API (Terminal 1)
+### 1. Start the Backend API Engine (Terminal 1)
 ```bash
 # Navigate to the project root
 cd /path/to/KARTA
@@ -78,9 +96,9 @@ pip install -r requirements.txt
 # Start the FastAPI server on port 8000
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-*The backend API will be available at: http://localhost:8000*
+*The backend API will be live and accepting uploads at: `http://localhost:8000`*
 
-### 2. Start the Frontend Dashboard (Terminal 2)
+### 2. Start the Frontend Web Application (Terminal 2)
 ```bash
 # Navigate to the frontend source folder
 cd /path/to/KARTA/src
@@ -88,22 +106,11 @@ cd /path/to/KARTA/src
 # Install Node dependencies
 npm install
 
-# Start the Vite development server
+# Start the Vite development system
 npm run dev
 ```
-*The web interface will be available at: http://localhost:5173*
+*The React UI will launch instantly and be available at: `http://localhost:5173`*
 
 ---
 
-## 📂 Project Structure
-
-* `/src/`: React frontend codebase (Pages, Components, Services).
-* `/routers/`: FastAPI endpoint controllers (websockets, CAM generation, analysis).
-* `/services/`: Core python background services (OCR engine, EWS logic, API wrappers).
-* `/utils/`: Helper scripts for file parsing and data formatting.
-* `main.py`: Application entry point and configuration for FastAPI.
-* `karta.db`: Local SQLite database storing analysis history.
-
----
-
-*Built during hackathon development sprints focusing on bridging AI execution with banking and MSME compliance standards.*
+*Built with passion, late nights, and heavy AI engineering to bridge the gap between deep-tech and realistic Indian banking operations.*
